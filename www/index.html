@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+    <title>Hello World</title>
+</head>
+
+<body>
+    <div class="app">
+        <h1>connection_compass</h1>
+        <div id="div1">WIFI:-</div>
+        <input type="button" value="getCurrentHeading" id="btn1">
+        <input type="button" value="watchHeading " id="btn2">
+        <input type="button" value="clearWatch " id="btn3">
+        <div id="hd" style="width:10px;height:10px;background:red"></div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('deviceready', function(){
+
+            var btn1=document.getElementById('btn1');
+            var div1=document.getElementById('div1');
+            var hd=document.getElementById('hd');
+
+            div1.innerHTML='WIFI:'+navigator.network.connection.type;
+            var watchID=null;
+            btn1.onclick=function(){
+                // alert(1);
+                function onSuccess(heading) {
+                    alert('Heading: ' + heading.magneticHeading);// 0-360 含小数
+                    hd.style.webkitTransform="rotate("+heading.magneticHeading+"deg)"
+                };
+
+                function onError(error) {
+                    alert('CompassError: ', error.code);
+                };
+                    
+                navigator.compass.getCurrentHeading(onSuccess, onError);
+            }
+
+            var btn2=document.getElementById('btn2');
+            var video1=document.getElementById("video1");
+            btn2.onclick=function(){
+                function onSuccess(heading) {
+                    hd.style.webkitTransform="rotate("+heading.magneticHeading+"deg)"
+                };
+
+                function onError(compassError) {
+                    alert('Compass error: ' + compassError.code);
+                };
+                    
+                var options = { frequency: 100 };		//每隔3秒更新一次
+                    
+                watchID = navigator.compass.watchHeading(onSuccess, onError, options);
+            }
+
+            var btn3=document.getElementById('btn3');
+            btn3.onclick=function(){
+                navigator.compass.clearWatch(watchID);
+            }
+            
+
+        }, false);
+    </script>
+</body>
+
+</html>
